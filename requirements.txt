@@ -1,0 +1,8 @@
+pandas 
+numpy
+faker
+pyarrow
+fastparquet
+snowflake
+python-dotenv
+python-dotenv==1.0.1
