@@ -209,31 +209,57 @@ The framework is designed to simulate **enterprise-scale Snowflake ingestion pip
 # 📂 Project Structure
 
 ```
-logistics-snowpark-data-platform
+LOGISTICS-SNOWPARK-PLATFORM
 │
-├── data_generator
-│   ├── generate_customers.py
-│   ├── generate_orders.py
-│   ├── generate_payments.py
-│   └── generate_deliveries.py
+├── data_generation
+│   │
+│   ├── __pycache__
+│   │
+│   ├── daily_batches
+│   |   ├── customers_*.parquet
+│   │   ├── deliveries_*.parquet
+│   │   ├── orders_*.parquet
+│   │   ├── payments_*.parquet
+│   │   ├── status_*.parquet
+│   │   └── ...
+|   |
+│   │
+│   ├── generator
+│   │   ├── __pycache__
+│   │   ├── __init__.py
+│   │   ├── generate_customers.py
+│   │   ├── generate_deliveries.py
+│   │   ├── generate_orders.py
+│   │   ├── generate_payments.py
+│   │   ├── generate_status_events.py
+│   │   └── generate_orders_batch.py
+│   │
+│   └── orchestrator.py
+│
+├── fraud_engine
+│
+├── infra
+│   ├── bronze_setup.sql
+│   ├── debugging.sql
+│   └── setup.sql
 │
 ├── ingestion
-│   ├── load_raw_customers.py
-│   ├── load_raw_orders.py
-│   ├── load_raw_payments.py
-│   ├── load_raw_deliveries.py
-│   └── load_raw_status.py
+│   └── load_raw_orders.py
 │
-├── config
-│   └── table_config.py
+├── metrics
 │
-├── utils
-│   ├── audit_logger.py
-│   └── snowflake_connection.py
+├── modeling
 │
+├── monitoring
+│
+├── orchestration
+│
+├── .env
+├── .env.example
+├── .gitignore
+├── python
 ├── requirements.txt
 └── README.md
-```
 
 ---
 
