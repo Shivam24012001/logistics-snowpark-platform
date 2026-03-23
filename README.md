@@ -7,7 +7,7 @@
 ![Status](https://img.shields.io/badge/Project-Active-success)
 
 ⚠️ **This project is actively under development.**  
-Currently the **Bronze layer is complete**, while **Silver and Gold layers are being implemented.**
+Fully Production-Ready End-to-End Data Pipeline **(Bronze → Silver → Gold)**
 
 ---
 
@@ -80,7 +80,134 @@ F --> G[Silver Transformations]
 
 G --> H[Gold Analytics Models]
 ```
+--- 
+# 📂 Project Structure
 
+```
+LOGISTICS-SNOWPARK-PLATFORM
+│
+├── data_generation/
+│   ├── batches/
+│   │   └── orders/
+│   │       └── 2026/
+│   │           └── 03/
+│   │               ├── 08/
+│   │               ├── 14/
+│   │               ├── 15/
+│   │               ├── 22/
+│   │               └── 23/
+│   │
+│   ├── daily_batches/
+│   │
+│   ├── generator/
+│   │   ├── __init__.py
+│   │   ├── generate_customers.py
+│   │   ├── generate_deliveries.py
+│   │   ├── generate_orders.py
+│   │   ├── generate_payments.py
+│   │   └── generate_status_events.py
+│   │
+│   ├── generate_orders_batch.py
+│   ├── missing_file.py
+│   └── orchestrator.py
+│
+├── infrastructure/
+│   ├── bronze_setup/
+│   │   ├── bronze_setup.sql
+│   │   ├── customer_setup.sql
+│   │   ├── deliveries_setup.sql
+│   │   ├── order_setup.sql
+│   │   ├── payment_setup.sql
+│   │   └── status_setup.sql
+│   │
+│   ├── bronze_streams/
+│   │   ├── customers_streams.sql
+│   │   ├── deliveries_stream.sql
+│   │   ├── orders_stream.sql
+│   │   ├── payments_stream.sql
+│   │   └── status_stream.sql
+│   │
+│   ├── silver_setup/
+│   │   ├── customers.sql
+│   │   ├── deliveries.sql
+│   │   ├── orders.sql
+│   │   ├── payments.sql
+│   │   ├── status.sql
+│   │   ├── debugging.sql
+│   │   └── setup.sql
+│   │
+│   ├── gold_setup/
+│   │   ├── fact_customer.sql
+│   │   ├── fact_deliveries.sql
+│   │   ├── fact_orders.sql
+│   │   ├── fact_payments.sql
+│   │   └── fact_status.sql
+│   │
+│   └── pipe/
+│       ├── customer_pipe.sql
+│       ├── deliveries_pipe.sql
+│       ├── orders_pipe.sql
+│       ├── payment_pipe.sql
+│       ├── status_pipe.sql
+│       └── master_task_refresh.sql
+│
+├── ingestion/
+│   └── load_raw_orders.py
+│
+├── transformations/
+│   ├── silver/
+│   │   ├── deliveries.sql
+│   │   ├── initial_load_customers.sql
+│   │   ├── initial_load_orders.sql
+│   │   ├── initial_load_payments.sql
+│   │   ├── merge_customers.sql
+│   │   └── status.sql
+│   │
+│   ├── silver_task/
+│   │   ├── controller_task.sql
+│   │   ├── customers_task.sql
+│   │   ├── deliveries_task.sql
+│   │   ├── orders_task.sql
+│   │   ├── payments_task.sql
+│   │   └── status_task.sql
+│   │
+│   ├── gold/
+│   │   ├── Star_Table/
+│   │   │   ├── fact_customer.sql
+│   │   │   ├── fact_deliveries.sql
+│   │   │   ├── fact_orders.sql
+│   │   │   ├── fact_payments.sql
+│   │   │   └── fact_status.sql
+│   │   │
+│   │   ├── kpi/
+│   │   │   └── kpi_daily.sql
+│   │   │
+│   │   ├── fraud/
+│   │   │
+│   │   └── task_controller.sql
+│   │
+│   └── stream_task/
+│       ├── stream.sql
+│       └── ORDERS_ENRICHED.sql
+│
+├── metrics/
+│   └── revenue.sql
+│
+├── orchestration/
+│   └── airflow_dag.py
+│
+├── monitoring/
+│
+├── modeling/
+│
+├── fraud_engine/
+│
+├── .env
+├── .env.example
+├── .gitignore
+├── requirements.txt
+└── README.md
+```
 ---
 
 # 🧠 Data Generation Layer
@@ -125,15 +252,27 @@ session.file.put("data/orders.parquet", "@RAW_STAGE")
 
 # 🥉 Bronze Layer (Completed)
 
-The Bronze layer stores **raw structured data** ingested directly from Parquet files.
+The Bronze layer stores **raw structured data ingested** directly from Parquet files using Snowpipe (auto-ingest).
+
+This layer acts as the **source of truth**, preserving data in its original form for downstream processing.
 
 Features implemented:
 
-- Structured Parquet ingestion
-- Dynamic COPY commands
-- Metadata enrichment
-- Error handling
-- File-level audit logging
+- Automated ingestion using Snowpipe  
+- Continuous file ingestion from Snowflake Stage  
+- Event-driven data loading (no manual trigger)  
+- Near real-time ingestion pipeline  
+- Metadata enrichment (LOAD_TIMESTAMP, LOAD_DATE)  
+- Error handling and load tracking  
+- File-level audit logging using FILE_LOAD_AUDIT  
+- Scalable and serverless ingestion architecture  
+
+---
+
+## Snowpipe Ingestion Flow
+
+- Parquet Files → Snowflake Stage → Snowpipe → Bronze Tables
+
 
 ---
 
@@ -156,9 +295,8 @@ Each Bronze table includes metadata columns:
 ```sql
 LOAD_TIMESTAMP TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP(),
 LOAD_DATE DATE DEFAULT CURRENT_DATE()
-```
 
-Metadata is populated **after COPY execution** to avoid Parquet limitations.
+Metadata is populated after ingestion, as Parquet files do not support default column values during load.
 
 ---
 
@@ -196,70 +334,12 @@ The ingestion framework dynamically processes incoming files.
 Key capabilities:
 
 - Pattern-based file routing
-- Dynamic COPY execution
-- Structured Parquet ingestion
-- Metadata handling
-- Exception handling
-- Audit logging
+- Automated ingestion using Snowpipe (no manual COPY required)
+- Metadata handling and enrichment
+- Exception handling and retry logic
+- Audit logging for monitoring
 
 The framework is designed to simulate **enterprise-scale Snowflake ingestion pipelines**.
-
----
-
-# 📂 Project Structure
-
-```
-LOGISTICS-SNOWPARK-PLATFORM
-│
-├── data_generation
-│   │
-│   ├── __pycache__
-│   │
-│   ├── daily_batches
-│   |   ├── customers_*.parquet
-│   │   ├── deliveries_*.parquet
-│   │   ├── orders_*.parquet
-│   │   ├── payments_*.parquet
-│   │   ├── status_*.parquet
-│   │   └── ...
-|   |
-│   │
-│   ├── generator
-│   │   ├── __pycache__
-│   │   ├── __init__.py
-│   │   ├── generate_customers.py
-│   │   ├── generate_deliveries.py
-│   │   ├── generate_orders.py
-│   │   ├── generate_payments.py
-│   │   ├── generate_status_events.py
-│   │   └── generate_orders_batch.py
-│   │
-│   └── orchestrator.py
-│
-├── fraud_engine
-│
-├── infra
-│   ├── bronze_setup.sql
-│   ├── debugging.sql
-│   └── setup.sql
-│
-├── ingestion
-│   └── load_raw_orders.py
-│
-├── metrics
-│
-├── modeling
-│
-├── monitoring
-│
-├── orchestration
-│
-├── .env
-├── .env.example
-├── .gitignore
-├── python
-├── requirements.txt
-└── README.md
 
 ---
 
@@ -268,48 +348,78 @@ LOGISTICS-SNOWPARK-PLATFORM
 Pipeline execution flow:
 
 1. Generate synthetic logistics data  
-2. Export datasets to **Parquet files**  
+2. Export data into **Parquet files**  
 3. Upload files to **Snowflake stage**  
-4. Execute **COPY INTO Bronze tables**  
-5. Populate metadata columns  
-6. Record ingestion activity in **FILE_LOAD_AUDIT**
+4. Automatically ingest data into Bronze using **Snowpipe**  
+5. Track incremental changes using **Streams (CDC)**  
+6. Apply transformations in **Silver layer using MERGE logic**  
+7. Build **Gold layer (Star Schema models)** using Tasks  
+8. Produce business-ready datasets and KPIs  
 
 ---
 
-# 🚧 Silver Layer (In Progress)
+# 🥈 Silver Layer (Completed)
 
-The Silver layer will implement:
+The Silver layer is responsible for **cleaning, standardizing, and incrementally transforming data**.
 
-- Timestamp normalization
-- Data deduplication
-- Incremental MERGE logic
-- Late-arriving event handling
-- Data validation rules
-- Clean analytical models
+Features implemented:
+
+- Standardized timestamps across datasets  
+- Deduplicated records using business keys  
+- Incremental processing using **MERGE statements**  
+- Handling of late-arriving data  
+- Data validation and cleanup  
+- Entity-level transformations across:
+  - Customers  
+  - Orders  
+  - Payments  
+  - Deliveries  
+  - Status events  
 
 ---
 
-# 🥇 Gold Layer (Planned)
+# 🥇 Gold Layer (Completed)
 
-Analytics-ready marts will be created for:
+The Gold layer provides **analytics-ready data models** designed for business reporting.
+
+Analytics marts:
 
 | Mart | Description |
 |----|----|
-| Order Lifecycle Mart | Order lifecycle analysis |
-| Customer 360 | Customer insights |
-| Payment Performance | Payment success rates |
-| Delivery SLA | Delivery performance metrics |
+| Order Lifecycle | Tracks the complete journey of an order |
+| Customer 360 | Consolidated view of customer behavior |
+| Payment Performance | Success and failure analysis of payments |
+| Delivery SLA | Measures delivery efficiency and timelines |
+
+---
+
+# ⚡ Streams & Tasks
+
+- Streams are used to capture **incremental changes (CDC)** from Bronze  
+- Tasks automate the transformation pipeline across layers  
+- Execution is dependency-driven (Bronze → Silver → Gold)  
+- Enables near real-time data availability  
+
+---
+
+# 📊 Business KPIs
+
+- Daily Revenue  
+- Average Order Value (AOV)  
+- Delivery SLA performance  
+- Payment success rate  
+- Order lifecycle metrics  
 
 ---
 
 # 📊 Future Dashboards
 
-Planned analytics dashboards:
+Planned dashboards:
 
-- Order Funnel
-- Delivery SLA Monitoring
-- Customer Retention
-- Payment Success Rates
+- Order Funnel  
+- Delivery SLA Monitoring  
+- Customer Retention  
+- Payment Performance  
 
 ---
 
@@ -319,8 +429,10 @@ Planned analytics dashboards:
 |------|------|
 | Data Warehouse | Snowflake |
 | Processing | Snowpark Python |
+| Data Pipeline | Snowpipe, Streams, Tasks |
+| Orchestration | Airflow |
 | Data Format | Parquet |
-| Programming | Python |
+| Programming | Python, SQL |
 | Libraries | Pandas, NumPy, Faker |
 | Version Control | Git & GitHub |
 
@@ -370,8 +482,8 @@ Examples that will be added:
 | Data Generator | ✅ Complete |
 | Stage Layer | ✅ Complete |
 | Bronze Layer | ✅ Complete |
-| Silver Layer | 🚧 In Development |
-| Gold Layer | ⬜ Planned |
+| Silver Layer | ✅ Complete |
+| Gold Layer |✅ Complete |
 
 ---
 

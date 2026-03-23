@@ -31,7 +31,7 @@ def upload_files(session):
         local_path,
         "@LOGISTICS_DB.BRONZE.RAW_STAGE",
         auto_compress=False,
-        overwrite=True
+        overwrite=False
     )
 
     print("Upload result:", result)
