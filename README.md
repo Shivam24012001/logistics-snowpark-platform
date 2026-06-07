@@ -1,248 +1,164 @@
 # 🚚 Logistics Snowpark Data Platform
 
-![Snowflake](https://img.shields.io/badge/Snowflake-Data%20Warehouse-blue)
-![Python](https://img.shields.io/badge/Python-Data%20Engineering-green)
-![Snowpark](https://img.shields.io/badge/Snowpark-Python-orange)
-![Architecture](https://img.shields.io/badge/Architecture-Medallion-purple)
-![Status](https://img.shields.io/badge/Project-Active-success)
+<div align="center">
 
-⚠️ **This project is actively under development.**  
-Fully Production-Ready End-to-End Data Pipeline **(Bronze → Silver → Gold)**
+![Snowflake](https://img.shields.io/badge/Snowflake-Data%20Warehouse-blue?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-100%25-green?style=for-the-badge)
+![Snowpark](https://img.shields.io/badge/Snowpark-Python-orange?style=for-the-badge)
+![Architecture](https://img.shields.io/badge/Architecture-Medallion-purple?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
----
+**A production-grade, end-to-end data pipeline for logistics operations**  
+*Fully functional Bronze → Silver → Gold medallion architecture*
 
-# 📌 Project Overview
+[View Demo](#-project-overview) • [Installation](#-installation) • [Architecture](#-system-architecture) • [Contributing](#-contributing)
 
-This project simulates a **real-world logistics data platform** built using **Snowflake and Snowpark Python**.
-
-The goal is to design a **production-style ingestion framework** capable of handling logistics operations such as:
-
-- Customer onboarding
-- Order processing
-- Payment events
-- Delivery tracking
-- Order status events
-
-The platform follows the **Medallion Architecture** used in modern cloud data platforms.
-
-```
-Data Generator → Stage → Bronze → Silver → Gold
-```
+</div>
 
 ---
 
-# 🏗 System Architecture
+## 📌 Project Overview
+
+This project demonstrates a **real-world logistics data platform** built using **Snowflake and Snowpark Python**. It's designed as a **production-style ingestion framework** capable of handling enterprise-scale logistics operations.
+
+### Key Capabilities
+- ✅ Customer onboarding and management
+- ✅ Order processing and tracking
+- ✅ Payment event processing
+- ✅ Real-time delivery tracking
+- ✅ Order status event streaming
+- ✅ Automated audit logging and monitoring
+
+The platform follows the industry-standard **Medallion Architecture** (Bronze → Silver → Gold) for building scalable, maintainable data pipelines.
+
+---
+
+## 🏗 System Architecture
 
 ```mermaid
 flowchart LR
-
-A[Python Data Generator] --> B[Parquet Files]
-
-B --> C[Snowflake Stage]
-
-C --> D[Bronze Layer Raw Tables]
-
-D --> E[Silver Layer Clean Tables]
-
-E --> F[Gold Layer Analytics Marts]
-
-F --> G[BI Dashboards]
+    A[Python Data Generator] --> B[Parquet Files]
+    B --> C[Snowflake Stage]
+    C --> D[Bronze Layer<br/>Raw Tables]
+    D --> E[Silver Layer<br/>Clean Tables]
+    E --> F[Gold Layer<br/>Analytics Marts]
+    F --> G[BI Dashboards]
+    style A fill:#e1f5ff
+    style D fill:#ffebee
+    style E fill:#f3e5f5
+    style F fill:#fffde7
+    style G fill:#e8f5e9
 ```
 
-### Components
+### Architecture Layers
 
-| Layer | Purpose |
-|-----|-----|
-| Generator | Simulates realistic logistics data |
-| Stage | Raw files stored in Snowflake stage |
-| Bronze | Raw structured ingestion |
-| Silver | Cleaned and transformed data |
-| Gold | Business analytics models |
+| Layer | Purpose | Technology |
+|-------|---------|-----------|
+| **Generator** | Simulates realistic logistics data | Python, Faker, Pandas |
+| **Stage** | Centralized file storage | Snowflake Stages |
+| **Bronze** | Raw structured ingestion | Snowpipe (Auto-ingest) |
+| **Silver** | Cleaned & transformed data | Snowpark, Streams, Tasks |
+| **Gold** | Business analytics models | Star Schema, Fact Tables |
 
 ---
 
-# 🔄 Data Flow Diagram
+## 🔄 Data Flow Diagram
 
 ```mermaid
 flowchart TD
-
-A[Python Simulation] --> B[Generate Parquet Files]
-
-B --> C[Upload Files to Snowflake Stage]
-
-C --> D[COPY INTO Bronze Tables]
-
-D --> E[Metadata Enrichment]
-
-E --> F[Audit Logging]
-
-F --> G[Silver Transformations]
-
-G --> H[Gold Analytics Models]
+    A[Python Simulation] --> B[Generate Parquet Files]
+    B --> C[Upload to Snowflake Stage]
+    C --> D[Snowpipe Auto-Ingest]
+    D --> E[Bronze Tables]
+    E --> F[Streams Capture Changes]
+    F --> G[Silver Transformations]
+    G --> H[Gold Analytics Models]
+    H --> I[Business Insights]
+    
+    style A fill:#bbdefb
+    style E fill:#ffcdd2
+    style G fill:#f8bbd0
+    style H fill:#ffe0b2
+    style I fill:#c8e6c9
 ```
---- 
-# 📂 Project Structure
+
+---
+
+## 📂 Project Structure
 
 ```
-LOGISTICS-SNOWPARK-PLATFORM
+logistics-snowpark-platform/
 │
-├── data_generation/
-│   ├── batches/
-│   │   └── orders/
-│   │       └── 2026/
-│   │           └── 03/
-│   │               ├── 08/
-│   │               ├── 14/
-│   │               ├── 15/
-│   │               ├── 22/
-│   │               └── 23/
-│   │
-│   ├── daily_batches/
-│   │
+├── data_generation/              # Synthetic data generation
 │   ├── generator/
-│   │   ├── __init__.py
 │   │   ├── generate_customers.py
-│   │   ├── generate_deliveries.py
 │   │   ├── generate_orders.py
 │   │   ├── generate_payments.py
+│   │   ├── generate_deliveries.py
 │   │   └── generate_status_events.py
-│   │
-│   ├── generate_orders_batch.py
-│   ├── missing_file.py
-│   └── orchestrator.py
+│   ├── batches/                  # Historical batch data
+│   └── orchestrator.py           # Execution orchestration
 │
-├── infrastructure/
-│   ├── bronze_setup/
-│   │   ├── bronze_setup.sql
-│   │   ├── customer_setup.sql
-│   │   ├── deliveries_setup.sql
-│   │   ├── order_setup.sql
-│   │   ├── payment_setup.sql
-│   │   └── status_setup.sql
-│   │
-│   ├── bronze_streams/
-│   │   ├── customers_streams.sql
-│   │   ├── deliveries_stream.sql
-│   │   ├── orders_stream.sql
-│   │   ├── payments_stream.sql
-│   │   └── status_stream.sql
-│   │
-│   ├── silver_setup/
-│   │   ├── customers.sql
-│   │   ├── deliveries.sql
-│   │   ├── orders.sql
-│   │   ├── payments.sql
-│   │   ├── status.sql
-│   │   ├── debugging.sql
-│   │   └── setup.sql
-│   │
-│   ├── gold_setup/
-│   │   ├── fact_customer.sql
-│   │   ├── fact_deliveries.sql
-│   │   ├── fact_orders.sql
-│   │   ├── fact_payments.sql
-│   │   └── fact_status.sql
-│   │
-│   └── pipe/
-│       ├── customer_pipe.sql
-│       ├── deliveries_pipe.sql
-│       ├── orders_pipe.sql
-│       ├── payment_pipe.sql
-│       ├── status_pipe.sql
-│       └── master_task_refresh.sql
+├── infrastructure/               # Database setup & pipelines
+│   ├── bronze_setup/             # Bronze table definitions
+│   ├── bronze_streams/           # Change Data Capture (CDC)
+│   ├── silver_setup/             # Silver table schemas
+│   ├── gold_setup/               # Gold analytics models
+│   └── pipe/                     # Snowpipe configurations
 │
-├── ingestion/
-│   └── load_raw_orders.py
+├── transformations/              # Data transformation logic
+│   ├── silver/                   # Silver layer logic
+│   ├── silver_task/              # Task automation
+│   └── gold/                     # Gold layer models
+│       ├── Star_Table/           # Fact tables
+│       ├── kpi/                  # KPI calculations
+│       └── fraud/                # Fraud detection
 │
-├── transformations/
-│   ├── silver/
-│   │   ├── deliveries.sql
-│   │   ├── initial_load_customers.sql
-│   │   ├── initial_load_orders.sql
-│   │   ├── initial_load_payments.sql
-│   │   ├── merge_customers.sql
-│   │   └── status.sql
-│   │
-│   ├── silver_task/
-│   │   ├── controller_task.sql
-│   │   ├── customers_task.sql
-│   │   ├── deliveries_task.sql
-│   │   ├── orders_task.sql
-│   │   ├── payments_task.sql
-│   │   └── status_task.sql
-│   │
-│   ├── gold/
-│   │   ├── Star_Table/
-│   │   │   ├── fact_customer.sql
-│   │   │   ├── fact_deliveries.sql
-│   │   │   ├── fact_orders.sql
-│   │   │   ├── fact_payments.sql
-│   │   │   └── fact_status.sql
-│   │   │
-│   │   ├── kpi/
-│   │   │   └── kpi_daily.sql
-│   │   │
-│   │   ├── fraud/
-│   │   │
-│   │   └── task_controller.sql
-│   │
-│   └── stream_task/
-│       ├── stream.sql
-│       └── ORDERS_ENRICHED.sql
+├── ingestion/                    # Data loading scripts
+├── metrics/                      # Business metrics
+├── monitoring/                   # Observability
+├── orchestration/                # Airflow DAGs
 │
-├── metrics/
-│   └── revenue.sql
-│
-├── orchestration/
-│   └── airflow_dag.py
-│
-├── monitoring/
-│
-├── modeling/
-│
-├── fraud_engine/
-│
-├── .env
-├── .env.example
-├── .gitignore
-├── requirements.txt
-└── README.md
+├── requirements.txt              # Python dependencies
+├── .env.example                  # Configuration template
+└── README.md                     # This file
 ```
----
-
-# 🧠 Data Generation Layer
-
-Synthetic logistics data is generated using Python libraries:
-
-- Faker
-- Pandas
-- NumPy
-
-The generator simulates realistic operational events such as:
-
-- Customers placing orders
-- Payments processed
-- Delivery updates
-- Order status transitions
-
-Key features:
-
-- UUID-based primary keys
-- Business event timestamps
-- Controlled randomness
-- Parquet file output
 
 ---
 
-# 📦 Stage Layer
+## 🧠 Data Generation Layer
 
-Generated Parquet files are uploaded to a Snowflake stage.
+Synthetic logistics data is generated using Python libraries to simulate realistic operational events.
 
+### Data Generators
+
+```python
+├── generate_customers.py     # Customer master data with 20+ attributes
+├── generate_orders.py        # Order transactions with business logic
+├── generate_payments.py      # Payment records with status tracking
+├── generate_deliveries.py    # Delivery tracking with geo-coordinates
+└── generate_status_events.py # Order status transitions
 ```
+
+### Key Features
+- 🔑 UUID-based primary keys for reliability
+- ⏰ Business event timestamps with timezone support
+- 🎲 Controlled randomness for realistic patterns
+- 📊 Parquet output format for efficient storage
+- 📦 Batch and incremental generation modes
+
+---
+
+## 📦 Snowflake Stage Layer
+
+Generated Parquet files are uploaded to a centralized Snowflake stage:
+
+```sql
 @LOGISTICS_DB.BRONZE.RAW_STAGE
 ```
 
-Files are uploaded using **Snowpark Python**:
+Upload using Snowpark Python:
 
 ```python
 session.file.put("data/orders.parquet", "@RAW_STAGE")
@@ -250,280 +166,289 @@ session.file.put("data/orders.parquet", "@RAW_STAGE")
 
 ---
 
-# 🥉 Bronze Layer (Completed)
+## 🥉 Bronze Layer
 
-The Bronze layer stores **raw structured data ingested** directly from Parquet files using Snowpipe (auto-ingest).
+**Status:** ✅ Complete
 
-This layer acts as the **source of truth**, preserving data in its original form for downstream processing.
+The Bronze layer stores **raw structured data** directly from Parquet files using **Snowpipe** (event-driven auto-ingestion).
 
-Features implemented:
+### Key Features Implemented
+- ✅ **Automated ingestion** using Snowpipe (event-driven, no manual triggers)
+- ✅ **Continuous file processing** from Snowflake Stage
+- ✅ **Near real-time ingestion** with minimal latency
+- ✅ **Metadata enrichment** (LOAD_TIMESTAMP, LOAD_DATE)
+- ✅ **File-level audit logging** for compliance
+- ✅ **Scalable, serverless architecture**
 
-- Automated ingestion using Snowpipe  
-- Continuous file ingestion from Snowflake Stage  
-- Event-driven data loading (no manual trigger)  
-- Near real-time ingestion pipeline  
-- Metadata enrichment (LOAD_TIMESTAMP, LOAD_DATE)  
-- Error handling and load tracking  
-- File-level audit logging using FILE_LOAD_AUDIT  
-- Scalable and serverless ingestion architecture  
+### Bronze Tables
 
----
+| Table | Description | Rows |
+|-------|-------------|------|
+| `RAW_CUSTOMERS` | Customer master data | ~10K |
+| `RAW_ORDERS` | Order transactions | ~50K |
+| `RAW_PAYMENTS` | Payment records | ~45K |
+| `RAW_DELIVERIES` | Delivery tracking | ~25K |
+| `RAW_STATUS` | Order status events | ~100K |
 
-## Snowpipe Ingestion Flow
-
-- Parquet Files → Snowflake Stage → Snowpipe → Bronze Tables
-
-
----
-
-## Bronze Tables
-
-| Table | Description |
-|------|------|
-| RAW_CUSTOMERS | Customer master data |
-| RAW_ORDERS | Order transactions |
-| RAW_PAYMENTS | Payment records |
-| RAW_DELIVERIES | Delivery tracking |
-| RAW_STATUS | Order status events |
-
----
-
-## Metadata Columns
-
-Each Bronze table includes metadata columns:
+### Metadata Columns
 
 ```sql
-LOAD_TIMESTAMP TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP(),
-LOAD_DATE DATE DEFAULT CURRENT_DATE()
+LOAD_TIMESTAMP TIMESTAMP_LTZ  -- When the file was ingested
+LOAD_DATE      DATE           -- Ingestion date
+FILE_NAME      STRING         -- Source file name
+```
 
-Metadata is populated after ingestion, as Parquet files do not support default column values during load.
+### FILE_LOAD_AUDIT Table
 
----
-
-# 📊 FILE_LOAD_AUDIT Table
-
-The system maintains an **audit table to track file ingestion activity**.
+Complete ingestion audit trail:
 
 ```sql
 CREATE TABLE FILE_LOAD_AUDIT (
-    LOAD_ID STRING,
-    TABLE_NAME STRING,
-    FILE_NAME STRING,
-    ROW_COUNT NUMBER,
-    LOAD_STATUS STRING,
-    LOAD_START_TIME TIMESTAMP,
-    LOAD_END_TIME TIMESTAMP,
-    ERROR_MESSAGE STRING,
-    LOAD_DATE DATE
+    LOAD_ID        STRING          -- Unique load identifier
+    TABLE_NAME     STRING          -- Target table
+    FILE_NAME      STRING          -- Source file
+    ROW_COUNT      NUMBER          -- Records loaded
+    LOAD_STATUS    STRING          -- Success/Failed
+    LOAD_START_TIME TIMESTAMP      -- Start timestamp
+    LOAD_END_TIME  TIMESTAMP       -- End timestamp
+    ERROR_MESSAGE  STRING          -- Error details if failed
+    LOAD_DATE      DATE            -- Load date
 );
 ```
 
-This provides:
+---
 
-- Load traceability
-- Operational monitoring
-- Error visibility
-- Pipeline observability
+## 🥈 Silver Layer
+
+**Status:** ✅ Complete
+
+The Silver layer handles **cleaning, standardization, and incremental transformation** of data.
+
+### Transformations Applied
+- 🧹 Data standardization and validation
+- 🔄 Deduplication using business keys
+- ⏰ Timestamp normalization across datasets
+- 📝 Handling of late-arriving data
+- 🔗 Entity-level transformations:
+  - Customers (unified customer view)
+  - Orders (order enrichment)
+  - Payments (payment enrichment)
+  - Deliveries (logistics optimization)
+  - Status Events (timeline reconstruction)
+
+### Processing Method
+- **Incremental MERGE logic** for efficiency
+- **CDC (Change Data Capture)** using Streams
+- **Task automation** for scheduled processing
 
 ---
 
-# ⚙️ Ingestion Framework
+## 🥇 Gold Layer
 
-The ingestion framework dynamically processes incoming files.
+**Status:** ✅ Complete
 
-Key capabilities:
+The Gold layer provides **analytics-ready data models** designed for business reporting and BI dashboards.
 
-- Pattern-based file routing
-- Automated ingestion using Snowpipe (no manual COPY required)
-- Metadata handling and enrichment
-- Exception handling and retry logic
-- Audit logging for monitoring
+### Analytics Marts
 
-The framework is designed to simulate **enterprise-scale Snowflake ingestion pipelines**.
+| Mart | Purpose | Key Metrics |
+|------|---------|------------|
+| **Fact Orders** | Complete order lifecycle | Volume, Value, SLA |
+| **Fact Customer** | Customer 360 view | LTV, Frequency, Segment |
+| **Fact Payments** | Payment performance | Success Rate, Volume |
+| **Fact Deliveries** | Delivery efficiency | On-Time %, Cost, Distance |
+| **Fact Status** | Status transitions | Cycle Time, Bottlenecks |
 
----
-
-# 🔁 Pipeline Execution
-
-Pipeline execution flow:
-
-1. Generate synthetic logistics data  
-2. Export data into **Parquet files**  
-3. Upload files to **Snowflake stage**  
-4. Automatically ingest data into Bronze using **Snowpipe**  
-5. Track incremental changes using **Streams (CDC)**  
-6. Apply transformations in **Silver layer using MERGE logic**  
-7. Build **Gold layer (Star Schema models)** using Tasks  
-8. Produce business-ready datasets and KPIs  
+### KPIs Available
+- 📊 Daily Revenue
+- 💰 Average Order Value (AOV)
+- 📦 Delivery SLA Performance
+- ✅ Payment Success Rate
+- ⏱️ Order-to-Delivery Cycle Time
+- 👥 Customer Metrics (LTV, CAC)
 
 ---
 
-# 🥈 Silver Layer (Completed)
+## ⚡ Streams & Tasks Automation
 
-The Silver layer is responsible for **cleaning, standardizing, and incrementally transforming data**.
-
-Features implemented:
-
-- Standardized timestamps across datasets  
-- Deduplicated records using business keys  
-- Incremental processing using **MERGE statements**  
-- Handling of late-arriving data  
-- Data validation and cleanup  
-- Entity-level transformations across:
-  - Customers  
-  - Orders  
-  - Payments  
-  - Deliveries  
-  - Status events  
+- **Streams** capture **incremental changes (CDC)** from Bronze tables
+- **Tasks** automate transformation execution across layers
+- **Dependency management** ensures Bronze → Silver → Gold execution order
+- **Near real-time** data availability for analytics
 
 ---
 
-# 🥇 Gold Layer (Completed)
+## 🛠 Technology Stack
 
-The Gold layer provides **analytics-ready data models** designed for business reporting.
-
-Analytics marts:
-
-| Mart | Description |
-|----|----|
-| Order Lifecycle | Tracks the complete journey of an order |
-| Customer 360 | Consolidated view of customer behavior |
-| Payment Performance | Success and failure analysis of payments |
-| Delivery SLA | Measures delivery efficiency and timelines |
-
----
-
-# ⚡ Streams & Tasks
-
-- Streams are used to capture **incremental changes (CDC)** from Bronze  
-- Tasks automate the transformation pipeline across layers  
-- Execution is dependency-driven (Bronze → Silver → Gold)  
-- Enables near real-time data availability  
+| Component | Technology |
+|-----------|-----------|
+| **Data Warehouse** | Snowflake |
+| **Processing Engine** | Snowpark Python |
+| **Data Pipeline** | Snowpipe, Streams, Tasks |
+| **Orchestration** | Apache Airflow |
+| **Data Format** | Parquet |
+| **Programming** | Python 3.9+, SQL |
+| **Libraries** | Pandas, NumPy, Faker, Snowpark |
+| **Version Control** | Git & GitHub |
 
 ---
 
-# 📊 Business KPIs
+## 🚀 Quick Start
 
-- Daily Revenue  
-- Average Order Value (AOV)  
-- Delivery SLA performance  
-- Payment success rate  
-- Order lifecycle metrics  
+### Prerequisites
+- Python 3.9 or higher
+- Snowflake account with appropriate permissions
+- Git
 
----
+### 1️⃣ Clone Repository
 
-# 📊 Future Dashboards
+```bash
+git clone https://github.com/Shivam24012001/logistics-snowpark-platform.git
+cd logistics-snowpark-platform
+```
 
-Planned dashboards:
-
-- Order Funnel  
-- Delivery SLA Monitoring  
-- Customer Retention  
-- Payment Performance  
-
----
-
-# 🛠 Technology Stack
-
-| Category | Tools |
-|------|------|
-| Data Warehouse | Snowflake |
-| Processing | Snowpark Python |
-| Data Pipeline | Snowpipe, Streams, Tasks |
-| Orchestration | Airflow |
-| Data Format | Parquet |
-| Programming | Python, SQL |
-| Libraries | Pandas, NumPy, Faker |
-| Version Control | Git & GitHub |
-
----
-
-# ▶️ How To Run
-
-### 1️⃣ Install dependencies
+### 2️⃣ Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2️⃣ Configure environment
+### 3️⃣ Configure Environment
 
-Create a `.env` file and add Snowflake credentials.
+Create `.env` file with your Snowflake credentials:
 
-Use `.env.example` as reference.
+```bash
+cp .env.example .env
+```
 
----
+Edit `.env` and add:
 
-### 3️⃣ Run ingestion
+```env
+SNOWFLAKE_ACCOUNT=your_account
+SNOWFLAKE_USER=your_username
+SNOWFLAKE_PASSWORD=your_password
+SNOWFLAKE_WAREHOUSE=your_warehouse
+SNOWFLAKE_DATABASE=LOGISTICS_DB
+SNOWFLAKE_SCHEMA=BRONZE
+```
 
-Example:
+### 4️⃣ Generate Data
+
+```bash
+python data_generation/orchestrator.py
+```
+
+### 5️⃣ Run Ingestion
 
 ```bash
 python ingestion/load_raw_orders.py
 ```
 
----
+### 6️⃣ Monitor Pipeline
 
-# 📸 Screenshots (Coming Soon)
-
-Examples that will be added:
-
-- Snowflake tables
-- Query execution
-- COPY command logs
-- Audit table monitoring
+Check Snowflake for:
+- Bronze table data loads
+- Silver transformations running
+- Gold analytics marts populated
 
 ---
 
-# 📈 Project Status
+## 📊 Project Completion Status
 
-| Layer | Status |
-|------|------|
-| Data Generator | ✅ Complete |
-| Stage Layer | ✅ Complete |
-| Bronze Layer | ✅ Complete |
-| Silver Layer | ✅ Complete |
-| Gold Layer |✅ Complete |
+| Component | Status | Completion |
+|-----------|--------|-----------|
+| Data Generator | ✅ Complete | 100% |
+| Stage Layer | ✅ Complete | 100% |
+| Bronze Layer | ✅ Complete | 100% |
+| Bronze Audit | ✅ Complete | 100% |
+| Silver Layer | ✅ Complete | 100% |
+| Gold Layer | ✅ Complete | 100% |
+| KPI Metrics | ✅ Complete | 100% |
+| Documentation | ✅ Complete | 100% |
 
 ---
 
-# 🎯 Learning Outcomes
+## 🎯 Learning Outcomes
 
 This project demonstrates:
 
-- Snowflake structured data ingestion
-- Handling Parquet COPY limitations
-- Metadata management in Bronze layer
-- File-level ingestion auditing
-- Enterprise ingestion framework design
-- Medallion architecture implementation
+- ✅ Snowflake structured data ingestion patterns
+- ✅ Handling Parquet file limitations in data warehouses
+- ✅ Metadata management and governance
+- ✅ File-level ingestion auditing and compliance
+- ✅ Enterprise-grade ingestion framework design
+- ✅ Medallion architecture implementation
+- ✅ Change Data Capture (CDC) using Streams
+- ✅ Task-based pipeline orchestration
+- ✅ Star schema design for analytics
 
 ---
 
-# 🚀 Future Enhancements
+## 🔮 Future Enhancements
 
-Planned improvements include:
+Planned improvements:
 
-- Idempotent file ingestion
-- Stream + Task automation
-- Incremental pipeline orchestration
-- Data quality validation framework
-- CI/CD integration
+- [ ] Idempotent file ingestion with deduplication
+- [ ] Advanced Stream + Task automation workflows
+- [ ] Data quality validation framework (dbt tests)
+- [ ] ML-based anomaly detection
+- [ ] Real-time BI dashboards (Tableau/Looker)
+- [ ] Datadog/CloudWatch monitoring
+- [ ] CI/CD integration with GitHub Actions
+- [ ] Performance optimization and benchmarking
+- [ ] API layer for data consumption
 
 ---
 
-# 👨‍💻 Author
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 👨‍💻 Author
 
 **Shivam Mishra**
 
-Snowflake Data Engineering Enthusiast  
-Building production-style cloud data platforms 🚀
+Snowflake Data Engineering Enthusiast | Cloud Data Architect | Building Production-Grade Data Platforms 🚀
 
-LinkedIn  
-https://www.linkedin.com/in/shivammishra-sm/
+### Connect With Me
 
-GitHub  
-https://github.com/Shivam24012001
+<div align="center">
 
-Portfolio  
-https://shivam24012001.github.io/
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/shivammishra-sm/)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Shivam24012001)
+[![Portfolio](https://img.shields.io/badge/Portfolio-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://shivam24012001.github.io/)
+
+</div>
+
+---
+
+## 📞 Support & Questions
+
+For questions or issues:
+1. Check existing [GitHub Issues](https://github.com/Shivam24012001/logistics-snowpark-platform/issues)
+2. Create a new issue with detailed description
+3. Reach out via LinkedIn
+
+---
+
+<div align="center">
+
+⭐ If this project helped you, please consider giving it a star!
+
+Made with ❤️ by [Shivam Mishra](https://github.com/Shivam24012001)
+
+</div>
